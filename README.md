@@ -225,19 +225,24 @@ spec:
 kubectl apply -f service.yaml
 ```
 
-## Check inside cluster
+## проверка внутри кластера. Создадим контейнер и с него будем выполнять проверки
 kubectl -n netology-1-4 run test-pod --image=wbitt/network-multitool -it --rm -- sh
-# in shell:
+# в строке  shell внутри контейнера:
 curl nginx-svc:9001
 curl multitool-svc:9002
 
-## Check from outside
+## выйдем из контейнера и произведем проверку, сначала проверим какой ип у ноды
 ```
 minikube ip
 ```
 
-curl http://192.168.49.2:30080/
+curl http://192.168.49.2:30080/  
 
+![рисунок 1](https://github.com/ysatii/kuber-homeworks1.4/blob/main/img/img_1.jpg)  
+![рисунок 2](https://github.com/ysatii/kuber-homeworks1.4/blob/main/img/img_2.jpg)  
+
+
+[ссылка на файлы развертыванияи](https://github.com/ysatii/kuber-homeworks1.4/tree/main/k8s)  
 
 
 ---
