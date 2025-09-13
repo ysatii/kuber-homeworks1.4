@@ -283,6 +283,33 @@ curl http://192.168.49.2:30080/
 - Скриншоты проверки доступа (`curl` или браузер).
 
 ---
+## Решение
+microk8s kubectl apply -f ns.yaml
+microk8s kubectl apply -n netology-1-4 -f deployment-frontend.yaml
+microk8s kubectl apply -n netology-1-4 -f deployment-backend.yaml
+microk8s kubectl apply -n netology-1-4 -f service-frontend.yaml
+microk8s kubectl apply -n netology-1-4 -f service-backend.yaml
+microk8s kubectl apply -n netology-1-4 -f ingress.yaml
+
+проверка подов 
+microk8s kubectl get pods  -n netology-1-4 -o wide
+
+проверка сервисов
+microk8s kubectl get svc -n netology-1-4 -o wide
+
+проверим ингресс
+microk8s kubectl get ing -n netology-1-4
+
+
+# если в ingress.yaml указан host: demo.local — добавь его в /etc/hosts
+echo "127.0.0.1 demo.local" | sudo tee -a /etc/hosts
+
+# проверки
+curl -i http://demo.local/
+curl -i http://demo.local/api
+
+
+
 ## Шаблоны манифестов с учебными комментариями
 ### **1. Deployment (nginx + multitool)**
 ```yaml
