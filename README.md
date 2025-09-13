@@ -284,13 +284,142 @@ curl http://192.168.49.2:30080/
 
 ---
 ## Решение
-microk8s kubectl apply -f ns.yaml
-microk8s kubectl apply -n netology-1-4 -f deployment-frontend.yaml
-microk8s kubectl apply -n netology-1-4 -f deployment-backend.yaml
-microk8s kubectl apply -n netology-1-4 -f service-frontend.yaml
-microk8s kubectl apply -n netology-1-4 -f service-backend.yaml
-microk8s kubectl apply -n netology-1-4 -f ingress.yaml
+### Создадим пространство имен 
+Листинг ns.yaml
+```
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: netology-1-4
+```
 
+команда 
+```
+microk8s kubectl apply -f ns.yaml
+```
+
+### подымим поды
+листнг deployment-frontend.yaml
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deploy
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.25-alpine
+          ports:
+            - containerPort: 80
+```
+
+команда
+```
+microk8s kubectl apply -n netology-1-4 -f deployment-frontend.yaml
+```
+
+листинг deployment-backend.yaml
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deploy
+  namespace: netology-1-4
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: http-echo
+          image: hashicorp/http-echo:0.2.3
+          args:
+            - "-text=backend OK"
+            - "-listen=:8000"
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8000
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+```
+команда
+```
+microk8s kubectl apply -n netology-1-4 -f deployment-backend.yaml
+```
+
+### подымим сервисы 
+листинг service-frontend.yaml
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      protocol: TCP
+```
+
+команда 
+```
+microk8s kubectl apply -n netology-1-4 -f service-frontend.yaml
+```
+
+листинг  service-backend.yaml
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: backend
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+      protocol: TCP
+```
+команда
+```
+microk8s kubectl apply -n netology-1-4 -f service-backend.yaml
+```
+
+подымим ingress контроллер
+```
+microk8s kubectl apply -n netology-1-4 -f ingress.yaml
+```
+
+### проверка подов и сервисов
 проверка подов 
 microk8s kubectl get pods  -n netology-1-4 -o wide
 
@@ -301,14 +430,19 @@ microk8s kubectl get svc -n netology-1-4 -o wide
 microk8s kubectl get ing -n netology-1-4
 
 
-# если в ingress.yaml указан host: demo.local — добавь его в /etc/hosts
-echo "127.0.0.1 demo.local" | sudo tee -a /etc/hosts
+ в ingress.yaml указан host: demo.local — добавим его в /etc/hosts
 
-# проверки
+
+
+### проверки доступности бэкенда и фронтента
 curl -i http://demo.local/
 curl -i http://demo.local/api
 
+![рисунок 1](https://github.com/ysatii/kuber-homeworks1.4/blob/main/img/img_1.jpg)  
+![рисунок 2](https://github.com/ysatii/kuber-homeworks1.4/blob/main/img/img_2.jpg)  
 
+
+[ссылка на файлы развертыванияи](https://github.com/ysatii/kuber-homeworks1.4/tree/main/k8s_ingress)  
 
 ## Шаблоны манифестов с учебными комментариями
 ### **1. Deployment (nginx + multitool)**
