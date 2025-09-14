@@ -438,8 +438,8 @@ microk8s kubectl get ing -n netology-1-4
 curl -i http://demo.local/
 curl -i http://demo.local/api
 
-![рисунок 1](https://github.com/ysatii/kuber-homeworks1.4/blob/main/img/img_1.jpg)  
-![рисунок 2](https://github.com/ysatii/kuber-homeworks1.4/blob/main/img/img_2.jpg)  
+![рисунок 1](https://github.com/ysatii/kuber-homeworks1.4/blob/main/img/img_3.jpg)  
+![рисунок 2](https://github.com/ysatii/kuber-homeworks1.4/blob/main/img/img_4.jpg)  
 
 
 [ссылка на файлы развертыванияи](https://github.com/ysatii/kuber-homeworks1.4/tree/main/k8s_ingress)  
